@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% set active_page = "converter" %}
+{% set active_page_2 = slug %}
+
+{% block description %}{{ slug_category.description }}{% endblock %}
+{% block title %}{{ page_name }} {{ slug_category.title }}{% endblock %}
+
+<!--Блок навигации по главному меню-->
+{% block navigat %}
+<nav>
+    <ul class="nav nav-pills small">
+        {%- for category in categories %}
+        <li role="presentation" class="{{ 'active' if active_page_2 == category.slug else '' }}">
+            <a href="{{ url_for('category_conv', slug=category.slug) }}">{{ category.name }}</a>
+        </li>
+        {%- endfor %}
+    </ul>
+</nav>
+{% endblock %}
+{% block content %}
+    <h1><small>{{ page_name }} {{ slug_category.title }}</small></h1>
+    <ul class="breadcrumb">
+        {%- for b in breadcrumbs -%}
+        {%- if slug_category.name != b.name %}
+        <li class="small"><a href="{{ b.link }}">{{ b.name }}</a></li>
+        {%- endif %}
+        {%- endfor -%}
+        <li class="active small">{{ slug_category.name }}</li>
+    </ul>
+    <hr>
+    <p class="small">{{ slug_category.description }}</p>
+    <!--Конвертер форма-->
+    <div class="well well-sm">
+        <form class="form-inline text-center" method="POST" novalidate>
+            <div class="form-group">
+                <input type="number" class="form-control input-sm text-right" step="any" placeholder="0" name="num" value="{{ value }}">
+            </div>
+            <div class="form-group">
+                <select style="width: 200px;" class="form-control input-sm" name="calculator" onchange="loadCalculator(this)">
+                    <option value="hidden" hidden> -- тип калькулятора -- </option>
+                    {%- for category in categories %}
+                    {%- if slug == category.slug %}
+                    <option value="{{ category.slug }}" selected>{{ category.name }}</option>
+                    {%- elif slug != category.slug %}
+                    <option value="{{ category.slug }}">{{ category.name }}</option>
+                    {%- endif %}
+                    {%- endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <select style="width: 200px;" class="form-control input-sm" name="type" onchange="loadCategory(this)">
+                    <option value="hidden" hidden> -- тип конвертера -- </option>
+                    {%- for types in slug_category.t %}
+                    {%- if type == types.slug %}
+                    <option selected value="{{ types.slug }}">{{types.name}}</option>
+                    {%- elif slug_category.id == types.category_id %}
+                    <option value="{{ types.slug }}">{{types.name}}</option>
+                    {%- endif %}
+                    {%- endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <select style="width: 200px;" class="form-control input-sm" name="symbol">
+                    {% if slug_type %}
+                    <option value="hidden" hidden> -- ед. измерения -- </option>
+                    {%- for si in slug_type.si %}
+                    <optgroup label="{{ si.name }}">
+                        {%- for unit in si.u %}
+                        {%- if slug_type.id == unit.type_id %}
+                        {%- if symbol == unit.slug %}
+                        <option selected value="{{ unit.slug }}">{{unit.name}}</option>
+                        {%- elif symbol != unit.slug %}
+                        <option value="{{ unit.slug }}">{{unit.name}}</option>
+                        {%- endif %}
+                        {%- endif %}
+                        {%- endfor %}
+                    </optgroup>
+                    {%- endfor %}
+                    {%- endif %}
+                </select>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-danger btn-sm">посчитать</button>
+            </div>
+        </form>
+    </div>
+    <!--вывод сообщения орезультате-->
+    <div class="small">
+        {% if get_flashed_messages() %}
+        {% for message in get_flashed_messages() %}
+        <p style="margin-left: 20px;">Поле <b class="text-danger">{{ message }}</b> обезательно для заполнения *</p>
+        {% endfor %}
+        {% endif %}
+    </div>
+    <div class="row">
+        {% for type in slug_category.t %}
+        <div class="col-xs-4">
+            <div class="list-group">
+                <a href="{{ url_for('type_conv', slug=slug, type=type.slug) }}" class="list-group-item" title="{{ type.name }}">
+                    <p class="list-group-item-heading"><strong>{{ type.name | truncate(35) }}</strong></p>
+                    <hr style="margin-top: 5px; margin-bottom: 5px;">
+                    <p class="list-group-item-text small">{{ type.description | truncate(100)}}</p>
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endblock %}

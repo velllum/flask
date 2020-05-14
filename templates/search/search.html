@@ -1,0 +1,98 @@
+{% extends "search/_base_search.html" %}
+{% set active_page = "search" %}
+
+
+{% block content %}
+<h1 class="text-center"><img src="{{ url_for('static', filename = 'images/base.png') }}"> <small> {{ page_name | upper }}</small></h1>
+    <hr>
+    <!--форма поиска-->
+    <div class="col-xs-8 col-xs-offset-2">
+        <div class="well well-sm" style="margin-bottom: 10px;">
+            <form method="GET" novalidate>
+                <div class="row">
+                    <div class="col-xs-10" style="padding-right: 5px;">
+                        <input type="text" class="form-control" placeholder="поиск" name="query" value="{{ request.args.get('query', '') }}">
+                    </div>
+                    <div class="col-xs-2" style="padding-left: 5px;">
+                        <button type="submit" class="btn btn-danger">найти</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!--вывод сообщения орезультате поиска-->
+        <div class="small">
+            {%- if get_flashed_messages() and pages.total != 0 -%}
+                {%- for messege in get_flashed_messages() -%}
+                    <p>{{ messege }} <b style="color: #b60000;">{{ request.args.get('query') }}</b> найдено — <b>{{ pages.total }}</b> совпадений</p>
+                {% endfor %}
+            {%- elif not get_flashed_messages() -%}
+                <p>Общее количество СИ в справочнике — <b>{{ pages.total }}</b></p>
+            {%- else -%}
+                {% for messege in get_flashed_messages() %}
+                <p>{{ messege }}</p>
+                {%- endfor -%}
+            {%- endif -%}
+        </div>
+    </div>
+
+    <!--пагинация-->
+    <div class="text-center">
+        {%- if pages.has_next or pages.has_prev -%}
+            {% include 'search/_page.html' %}
+        {%- endif -%}
+    </div>
+
+    <!--Таблица-->
+    <table class="table table-striped table-bordered table-hover small">
+        <thead>
+        <tr class="active">
+            <th>№</th>
+            <th>Госреестр</th>
+            <th>Наименование СИ</th>
+            <th>Обознач. СИ</th>
+            <th>Изготовитель</th>
+            <th>Узнать</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        {%- for data in pages.items -%}
+        <tr>
+            {%- if request.args.get('query') -%}
+                {%- if pages.page == 1 -%}
+                    <td>{{ loop.index }}</td>
+                {%- else -%}
+                    <td>{{ loop.index + (pages.per_page * pages.prev_num) }}</td>
+                {%- endif -%}
+            {%- else -%}
+                <td>{{ data.ids }}</td>
+            {%- endif -%}
+            <td>{{ rex_select_row( data.NumberSI, request.args.get('query') )  | safe }}</td>
+            <td>
+                {{ rex_select_row( data.NameSI, request.args.get('query') )  | safe }}
+<!--                <br>-->
+                {#{%- if data.device.name -%}
+                    <a href="{{ url_for('device_register', slug=data.device.slug) }}"><span class="glyphicon glyphicon-share"></span> {{ data.device.name }}</a>
+                {%- endif -%}#}
+            </td>
+            <td width="120">{{ rex_select_row( data.DesignationSI, request.args.get('query') )  | safe }}</td>
+            {%- if data.ManufacturerSI -%}
+                <td width="200"><a href="{{url_for('maker_content', maker=data.Maker)}}">{{ rex_select_row( data.ManufacturerSI, request.args.get('query') )  | safe }}</a></td>
+            {%- else -%}
+                <td>Нет данных</td>
+            {%- endif -%}
+            <td><a href="{{ url_for('content', link=data.Slug) }}" title="">Подробнее</a></td>
+        </tr>
+        {%- endfor -%}
+        </tbody>
+    </table>
+
+    <!--пагинация-->
+    <div class="text-center">
+        {%- if pages.has_next or pages.has_prev -%}
+        {% include 'search/_page.html' %}
+        {%- endif -%}
+    </div>
+
+{% endblock %}

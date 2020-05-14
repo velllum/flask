@@ -1,0 +1,45 @@
+{% extends "search/_base_search.html" %}
+{% set active_page, active_page_2 = "search", "maker" %}
+
+{% block description %}{% endblock %}
+{% block title %}{{ page_name }} {{ content[0].ManufacturerSI | safe }}{% endblock title %}
+
+{% block content %}
+    <h1><small>{{ page_name }} <b>{{ content[0].ManufacturerSI | safe }}</b></small></h1>
+    <ul class="breadcrumb">
+        {%- for b in breadcrumbs -%}
+        {%- if content[0].ManufacturerSI != b.text %}
+        <li class="small"><a href="{{ b.url }}">{{ b.text }}</a></li>
+        {%- endif %}
+        {%- endfor -%}
+        <li class="active small">{{ content[0].ManufacturerSI | safe | truncate(110) if content[0].ManufacturerSI  else '' }}</li>
+    </ul>
+    <hr>
+    <p class="small">Общее количество СИ в справочнике — <b>{{ count }}</b></p>
+    <table class="table table-striped table-bordered table-hover small">
+        <thead>
+        <tr>
+            <th>№</th>
+            <th>Госреестр</th>
+            <th>Наименование СИ</th>
+            <th>Обознач. СИ</th>
+            <th>Узнать</th>
+        </tr>
+        </thead>
+        <tbody>
+        {%- for data in content -%}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ data.NumberSI }}</td>
+            <td>{{ data.NameSI }}<br>
+                {#{%- if data.device.name -%}
+                <a href="{{ url_for('device_register', slug=data.device.slug) }}"><span class="glyphicon glyphicon-share"></span> {{ data.device.name }}</a>
+                {%- endif -%}#}
+            </td>
+            <td width="100">{{ data.DesignationSI }}</td>
+            <td><a href="{{url_for('content', link=data.Slug)}}" title="">Подробнее</a></td>
+        </tr>
+        {%- endfor -%}
+        </tbody>
+    </table>
+{% endblock %}

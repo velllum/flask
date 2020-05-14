@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% set active_page = "index" %}
+
+{% block title %}
+    home-page
+{% endblock title %}
+
+<div class="main">
+
+        {% block content %}
+        <div class="row">
+            <div class="col-xs-12 text-center">
+                <div class="vcenter">
+                    <h1>404 не найдено</h1>
+                    <div>Страница которую вы ищете не была найдена.</div>
+                    <a href="{{ url_for('index') }}" class="btn btn-link">Вернуться на главную страницу</a>
+                </div>
+            </div>
+
+        </div>
+        {% endblock content %}
+
+</div>
+{% block Forms %}
+{% endblock Forms %}

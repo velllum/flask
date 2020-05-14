@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% set active_page = "index" %}
+
+{% block content %}
+<img style="width: 900px;" src="{{ url_for('static', filename = 'images/baner.png') }}">
+<br>
+<br>
+<div class="row">
+    <div class="col-xs-7">
+        <h4><em>Последние новости</em></h4>
+        <hr>
+        {%- for new in news -%}
+        <div class="row">
+            <div class="col-xs-2" style="padding-right: 5px; padding-top: 7px;">
+                <img style="height: 70px;" src="{{ url_for('static', filename = new.get_image()) }}">
+            </div>
+            <div class="col-xs-10" style="padding-left: 5px;">
+                <span class="small"><b>{{ new.date_cont }}</b> &nbsp;|&nbsp; <span class="glyphicon glyphicon-tag" aria-hidden="true"></span> <a href="{{ url_for('news_category', category=new.category) }}">{{ new.get_category() }}</a></span><br>
+                <span><a href="{{ url_for('news_content', category=new.category, slug=new.slug) }}" title="{{ new.title }}">{{ new.title | truncate(55, False, '...', 0) }}</a></span><br>
+                <small>{{ new.clear_html_content() | truncate(120) }}</small>
+            </div>
+        </div>
+        <hr style="margin-top: 10px; margin-bottom: 10px">
+        {%- endfor -%}
+    </div>
+
+    <div class="col-xs-5">
+        <div class="row">
+            <h4><em>Поиск по базе типов СИ</em></h4>
+            <hr>
+
+            <div class="row">
+                <div class="col-xs-12">
+                    <form action="{{ url_for('search') }}" method="GET" novalidate>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <input type="text" class="form-control" style="border-radius: 0;" placeholder="поиск" name="query" value="{{ request.args.get('query', '') }}">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" style="border-radius: 0;" type="submit"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+                                </span>
+                            </div>
+                        </div>
+                    </form>
+                    <br>
+                </div>
+            </div>
+
+            <div class="col-xs-6">
+                <div class="list-group text-center">
+                    <a href="{{ url_for('search') }}" class="list-group-item">
+                        <p class="list-group-item-heading" style="font-size: 24px;"><strong>{{ data_count }}</strong></p>
+                        <hr style="margin-top: 5px; margin-bottom: 5px;">
+                        <p class="list-group-item-text small">Количество СИ</p>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-xs-6">
+                <div class="list-group text-center">
+                    <a href="{{ url_for('maker') }}" class="list-group-item">
+                        <p class="list-group-item-heading" style="font-size: 24px;"><strong>{{ maker_count }}</strong></p>
+                        <hr style="margin-top: 5px; margin-bottom: 5px;">
+                        <p class="list-group-item-text small">Количество компаний</p>
+                    </a>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-12">
+                    <!-- Контент страницы -->
+                    <div data-spy="scroll" data-target="#navbar-example" data-offset="0" style="height:350px;overflow:auto; position: relative;">
+
+                        <!--Таблица-->
+                        <table class="table table-striped table-bordered table-hover small">
+                            <thead>
+                            <tr class="active">
+                                <th>№</th>
+                                <th>Госреестр</th>
+                                <th>Наименование СИ</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {%- for search in data -%}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td>{{ search.NumberSI | safe }}</td>
+                                <td><a href="{{ url_for('content', link=search.Slug) }}" title="{{ search.NameSI | safe }}">{{ search.NameSI | safe | truncate(70) }}</a></td>
+                            </tr>
+                            {%- endfor -%}
+                            </tbody>
+                        </table>
+                        <div class="text-center small"><a href="{{ url_for('search') }}"><span>Просмотреть все типы СИ</span> </a> <span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="clearfix hidden-xs"></div>
+
+    <div class="col-xs-6">
+        <h4><em>Популярные конвертеры</em></h4>
+        <hr>
+    </div>
+    <div class="clearfix hidden-xs"></div>
+    {%- for type in types -%}
+    <div class="col-xs-6">
+        <dl class="dl-horizontal">
+            <dt style="width: 25px;">{{ loop.index }})</dt>
+            <dd style="margin-left: 30px;"><a href="{{ url_for('type_conv', slug='populiarnye-konvertery', type=type.slug) }}" title="{{ type.name }}">{{ type.name | truncate(55, False, '...', 0)}}</a></dd>
+            <dd style="margin-left: 30px;"><small>{{ type.description | safe | truncate(100) }}</small></dd>
+        </dl>
+        <hr style="margin-top: 10px; margin-bottom: 10px">
+    </div>
+    {%- endfor -%}
+</div>
+
+
+{% endblock %}

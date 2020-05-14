@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block navigat %}
+<nav>
+    <ul class="nav nav-pills small">
+        <li role="presentation" class="{{ 'active' if active_page == 'news' and active_page_2 == 'news' else '' }}"><a href="{{ url_for('news') }}">Все</a></li>
+        <li role="presentation" class="{{ 'active' if active_page == 'news' and active_page_2 == 'metrologiya' else '' }}"><a href="{{ url_for('news_category', category='metrologiya') }}">Метрология</a></li>
+        <li role="presentation" class="{{ 'active' if active_page == 'news' and active_page_2 == 'standartizatsiya' else '' }}"><a href="{{ url_for('news_category', category='standartizatsiya') }}">Стандартизация</a></li>
+        <li role="presentation" class="{{ 'active' if active_page == 'news' and active_page_2 == 'zakonodatelstvo' else '' }}"><a href="{{ url_for('news_category', category='zakonodatelstvo') }}">Законодательство</a></li>
+        <li role="presentation" class="{{ 'active' if active_page == 'news' and active_page_2 == 'meropriyatiya' else '' }}"><a href="{{ url_for('news_category', category='meropriyatiya') }}">Мероприятия</a></li>
+        <li role="presentation" class="{{ 'active' if active_page == 'news' and active_page_2 == 'nauka' else '' }}"><a href="{{ url_for('news_category', category='nauka') }}">Наука и техника</a></li>
+        <li role="presentation" class="{{ 'active' if active_page == 'news' and active_page_2 == 'novosti_kompaniy' else '' }}"><a href="{{ url_for('news_category', category='novosti_kompaniy') }}">Новости компании</a></li>
+        <li role="presentation" class="{{ 'active' if active_page == 'news' and active_page_2 == 'drugie-novosti' else '' }}"><a href="{{ url_for('news_category', category='drugie-novosti') }}">Другие новости</a></li>
+    </ul>
+</nav>
+{% endblock %}

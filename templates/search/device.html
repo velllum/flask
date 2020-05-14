@@ -1,0 +1,42 @@
+{% extends "search/_base_search.html" %}
+{% set active_page, active_page_2 = "search", "device" %}
+
+    {% block content %}
+
+    <h1 class="text-center"><small>{{ page_name }}</small></h1>
+
+    <ul class="breadcrumb">
+        {%- for b in breadcrumbs -%}
+        {%- if 'Приборы' != b.text %}
+        <li class="small"><a href="{{ b.url }}">{{ b.text }}</a></li>
+        {%- endif -%}
+        {%- endfor -%}
+        <li class="active small">Приборы</li>
+    </ul>
+
+    <hr>
+    <div class="text-center">
+        {%- for letter in letters | unique -%}
+            <div class="btn-group">
+                <a href="#{{ letter }}" class="btn btn-default btn-sm">{{ letter }}</a>
+            </div>
+        {%- endfor -%}
+    </div>
+    <br>
+    <dl>
+        {%- for letter in letters | unique -%}
+        <dt><h2 id="{{ letter }}">{{ letter }}</h2></dt>
+            {%- for device in devices -%}
+                {%- if device.name[0] == letter -%}
+                    <div class="col-xs-4">
+                        <dd style="margin-bottom: 3px;"><a href="{{ url_for('device_register', slug=device.slug) }}">{{ device.name }}</a> <span class="label label-info">{{ device.count }}</span></dd>
+                    </div>
+                {%- else -%}
+                    <div class="clearfix hidden-xs"></div>
+                {%- endif -%}
+            {%- endfor -%}
+        {%- endfor -%}
+    </dl>
+
+{% endblock %}
+

@@ -1,0 +1,150 @@
+{% extends "search/_base_search.html" %}
+{% set active_page = "search" %}
+
+{% block description %}{{ content.NumberSI | safe }} : {{ content.NameSI | safe }} {{ content.DesignationSI | safe }} : {{ content.ManufacturerTotalSI | safe }}{% endblock description %}
+{% block title %}{{ content.NumberSI }} : {{ content.NameSI }} {{ '' if content.DesignationSI == 'Нет данных' else content.DesignationSI }}{% endblock title %}
+
+{% block content %}
+
+<h1><small>{{ content.NameSI }} <b>{{ '' if content.DesignationSI == 'Нет данных' else content.DesignationSI }}</b></small></h1>
+
+<ul class="breadcrumb">
+    {%- for b in breadcrumbs -%}
+    {%- if content.NumberSI != b.text -%}
+    <li class="small"><a href="{{ b.url }}">{{ b.text }}</a></li>
+    {%- endif -%}
+    {%- endfor -%}
+    <li class="active small">{{ content.NameSI | truncate(120) if content.NameSI else '' }}</li>
+</ul>
+
+<hr>
+<h4>Основная информация по госреестру</h4>
+
+<table class="table table-bordered table-striped table-condensed small">
+    <thead>
+        <tr>
+            <th class="text-right" width="230">Номер в госреестре</th>
+            <td>{{content.NumberSI if content.NumberSI else '—' }}</td>
+        </tr>
+        <tr>
+            <th class="text-right">Наименование СИ</th>
+            <td>
+                {{ content.NameSI if content.NameSI else '—' }}<br>
+                {#{%- if content.device -%}
+                    <a href="{{ url_for('device_register', slug=content.device.slug) }}">{{ content.device.name }}</a>
+                {%- endif -%}#}
+            </td>
+        </tr>
+        <tr>
+            <th class="text-right">Обозначение типа СИ</th>
+            <td>{{ content.DesignationSI if content.DesignationSI else '—' }}</td>
+        </tr>
+        <tr>
+            <th class="text-right">Номер записи</th>
+            <td>{{ content.number if content.number else '—' }}</td>
+        </tr>
+        <tr>
+            <th class="text-right">Дата опубликования</th>
+            <td>{{content.date if content.date else '—' }}</td>
+        </tr>
+        <tr>
+            <th class="text-right">Описание типа</th>
+            <td>
+                {%- if content.DescriptionSiName -%}
+                    <p class="text-danger">{{ content.DescriptionSiName }}</p>
+                     &ndash; <a href="{{ url_for( 'download_file', file=content.DescriptionSiName ) }}" download>Скачать</a>
+                    <br>
+                     &ndash; <a href="{{ url_for('open_file', file=content.DescriptionSiName) }}" target="_blank">Открыть</a>
+                {%- else -%}
+                    —
+                {%- endif -%}
+            </td>
+        </tr>
+        <tr>
+            <th class="text-right">Методики поверки</th>
+            <td>
+                {%- if content.MethodVerifSiName -%}
+                    <p class="text-danger">{{ content.MethodVerifSiName }}</p>
+                     &ndash; <a href="{{ url_for( 'download_file', file=content.MethodVerifSiName ) }}" download>Скачать</a>
+                    <br>
+                     &ndash; <a href="{{ url_for('open_file', file=content.MethodVerifSiName) }}" target="_blank">Открыть</a>
+                {%- else -%}
+                    —
+                {%- endif -%}
+            </td>
+
+        </tr>
+        <tr>
+            <th class="text-right">Процедура</th>
+            <td>{{ content.ProcedSI if content.ProcedSI else '—' }}</td>
+        </tr>
+        <tr>
+            <th class="text-right">Сведения о типе СИ</th>
+            <td>{{ content.SvedenSI if content.SvedenSI else '—' }}</td>
+        </tr>
+        <tr>
+            <th class="text-right">Срок свидетельства</th>
+            <td>{{ content.CertificateLifeSI if content.CertificateLifeSI else '—' }}</td>
+        </tr>
+        <tr>
+            <th class="text-right">Заводской номер</th>
+            <td>{{ content.FactoryNumSI if content.FactoryNumSI else '—' }}</td>
+        </tr>
+    </thead>
+</table>
+
+<h4>Изготовитель</h4>
+
+<table class="table table-bordered table-striped table-condensed small">
+    <thead>
+        <tr>
+            <th class="text-right" width="230">Изготовитель</th>
+            <td>{{ content.ManufacturerTotalSI if content.ManufacturerTotalSI else '—' }}</td>
+        </tr>
+        <tr>
+            <th class="text-right">Страна</th>
+            <td>{{ content.CountrySI if content.CountrySI else '—' }}</td>
+        </tr>
+        <tr>
+            <th class="text-right">Населенный пункт</th>
+            <td>{{ content.SettlementSI if content.SettlementSI else '—' }}</td>
+        </tr>
+        <tr>
+            <th class="text-right">Предприятие-изготовитель</th>
+            <td>
+                <a href="{{url_for('maker_content', maker=content.Maker)}}" title="">{{ content.ManufacturerSI if content.ManufacturerSI else 'Нет данных' }}</a>
+            </td>
+        </tr>
+    </thead>
+</table>
+
+<h4>Межповерочный интервал</h4>
+
+<table class="table table-bordered table-striped table-condensed small">
+    <thead>
+        <tr>
+            <th class="text-right" width="230">МПИ</th>
+            <td>{{ content.MPISI if content.MPISI else '—' }}</td>
+        </tr>
+        <tr>
+            <th class="text-right">Наличие периодической поверки</th>
+            <td>{{ content.NextVerifSI if content.NextVerifSI else '—' }}</td>
+        </tr>
+        <tr>
+            <th class="text-right">Лет</th>
+            <td>{{ content.YearSI if content.YearSI else '—' }}</td>
+        </tr>
+        <tr>
+            <th class="text-right">Месяцев</th>
+            <td>{{ content.MonthsSI if content.MonthsSI else '—' }}</td>
+        </tr>
+        <tr>
+            <th class="text-right">Статус</th>
+            <td>{{ content.StatusSI if content.StatusSI else '—' }}</td>
+        </tr>
+    </thead>
+</table>
+
+{% endblock %}
+
+

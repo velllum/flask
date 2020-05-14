@@ -1,0 +1,38 @@
+{% extends "news/_base_news.html" %}
+{% set active_page = "news" %}
+
+{% block content %}
+<h1 class="text-center"><small>{{ page_name | upper }}</small></h1>
+<hr>
+
+<div class="text-center">
+    {%- if pages.has_next or pages.has_prev -%}
+    {%- include 'news/_page_news.html' -%}
+    {%- endif -%}
+</div>
+
+<!-- Контейнер для медиа-объектов -->
+{%- for new in pages.items -%}
+<div class="well" style="border-radius: 0; background-color: #fff">
+    <ul class="media-list">
+        <li class="media">
+            <p><b>{{ new.date_cont }}</b></p>
+            <div class="media-body small">
+                <h4 class="media-heading" title="{{ new.title }}"><a href="{{ url_for('news_content', category=new.category, slug=new.slug) }}">{{ new.title | truncate(80) }}</a></h4>
+                <p>{{ new.clear_html_content() | safe | truncate(300) }}</p>
+            </div>
+            <div class="media-right">
+                <img class="media-object" style="height: 100px;" src="{{ url_for('static', filename = new.get_image()) }}">
+            </div>
+        </li>
+    </ul>
+</div>
+{% endfor %}
+
+<div class="text-center">
+    {%- if pages.has_next or pages.has_prev -%}
+    {%- include 'news/_page_news.html' -%}
+    {%- endif -%}
+</div>
+
+{% endblock %}

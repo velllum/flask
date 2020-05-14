@@ -1,0 +1,69 @@
+{% extends "search/_base_search.html" %}
+{% set active_page =  "maker" %}
+
+{% block content %}
+
+<h1 class="text-center"><img src="{{ url_for('static', filename = 'images/company.png') }}"> <small> {{ page_name | upper }}</small></h1>
+<hr>
+<!--форма поиска-->
+<div class="col-xs-8 col-xs-offset-2">
+    <div class="well well-sm" style="margin-bottom: 10px;">
+        <form method="POST" novalidate>
+            <div class="row">
+                <div class="col-xs-10" style="padding-right: 5px;">
+                    {{ form.hidden_tag() }}
+                    {{ form.query(class="form-control", value=query) }}
+                </div>
+                <div class="col-xs-2" style="padding-left: 5px;">
+                    {{ form.submit(class="btn btn-danger") }}
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!--вывод сообщения орезультате поиска-->
+    <div class="small">
+        {%- if get_flashed_messages() and pages.total != 0 -%}
+        {%- for messege in get_flashed_messages() -%}
+        <p>{{ messege }} <b style="color: #b60000;">{{ query }}</b> найдено — <b>{{ list | length }}</b> совпадений</p>
+        {% endfor %}
+        {%- elif not get_flashed_messages() -%}
+        <p>Общее количество Компаний — <b>{{ pages.total }}</b></p>
+        {%- else -%}
+        {% for messege in get_flashed_messages() %}
+        <p>{{ messege }}</p>
+        {%- endfor -%}
+        {%- endif -%}
+    </div>
+
+</div>
+
+<hr>
+{%- if pages.has_next or pages.has_prev -%}
+{% include 'search/_page_maker.html' %}
+{%- endif -%}
+
+<!--Таблица-->
+<table class="table table-bordered table-striped table-condensed small">
+    <thead>
+    <tr>
+        <th>Изготовитель</th>
+        <th>Кол. СИ</th>
+    </tr>
+    </thead>
+    <tbody>
+    {%- for manuf, maker, count in list -%}
+    <tr>
+        <td><a href="{{ url_for('maker_content', maker=maker) }}">{{ manuf | safe }}</a></td>
+        <td class="text-right" width="70">{{ count }}</td>
+    </tr>
+    {%- endfor -%}
+    </tbody>
+</table>
+
+{%- if pages.has_next or pages.has_prev -%}
+{% include 'search/_page_maker.html' %}
+{%- endif -%}
+
+{% endblock %}
+

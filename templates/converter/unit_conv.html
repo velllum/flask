@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% set active_page = "converter" %}
+{% set active_page_2 = slug %}
+{% set active_page_3 = type %}
+
+{% block description %}{{ slug_unit.clear_html_description() | truncate(500, False, '', 0) }}{% endblock %}
+{% block title %}{{ page_name }} - {{ slug_unit.name | lower }}{% endblock %}
+
+<!--Блок навигации по главному меню-->
+{% block navigat %}
+<nav>
+    <ul class="nav nav-pills small">
+        {%- for category in categories %}
+        <li role="presentation" class="{{ 'active' if active_page_2 == category.slug else '' }}">
+            <a href="{{ url_for('category_conv', slug=category.slug) }}">{{ category.name }}</a>
+        </li>
+        {%- endfor %}
+    </ul>
+</nav>
+<hr>
+<nav>
+    <ul class="nav nav-pills small">
+        {%- for type in slug_category.t %}
+        <li role="presentation" class="{{ 'active' if active_page_3 == type.slug else '' }}">
+            <a href="{{ url_for('type_conv', slug=slug, type=type.slug) }}">{{ type.name }}</a>
+        </li>
+        {%- endfor %}
+    </ul>
+</nav>
+{% endblock %}
+{% block content %}
+<h1><small>{{ page_name }} - <b>{{ slug_unit.name | lower }}</b></small></h1>
+    <ul class="breadcrumb">
+        {%- for b in breadcrumbs -%}
+        {%- if slug_unit.name != b.name %}
+        <li class="small"><a href="{{ b.link }}">{{ b.name }}</a></li>
+        {%- endif %}
+        {%- endfor -%}
+        <li class="active small">{{ slug_unit.name }}</li>
+    </ul>
+    <hr>
+    <p class="small">{{ slug_unit.description | safe }}</p>
+    <!--Конвертер форма-->
+    <div class="col-xs-8 col-xs-offset-2">
+        <div class="well well-sm">
+            <form class="form-inline text-center" method="POST" novalidate>
+                <div class="form-group">
+                    <input type="number" class="form-control input-sm text-right" step="any" placeholder="0" name="num" value="{{ value }}">
+                </div>
+                <div class="form-group">
+                    <select style="width: 290px;" class="form-control input-sm" name="symbol">
+                        {%- for si in slug_type.si %}
+                        <optgroup label="{{ si.name }}">
+                            {%- for unit in si.u %}
+                            {%- if slug_type.id == unit.type_id %}
+                            {%- if u == unit.slug %}
+                            <option selected value="{{ unit.slug }}">{{unit.name}}</option>
+                            {%- elif u != unit.slug %}
+                            <option value="{{ unit.slug }}">{{unit.name}}</option>
+                            {%- endif %}
+                            {%- endif %}
+                            {%- endfor %}
+                        </optgroup>
+                        {% endfor -%}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-danger btn-sm">посчитать</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!--вывод сообщения орезультате-->
+    <div class="small">
+        {%- if get_flashed_messages() %}
+        {%- for message in get_flashed_messages() %}
+        <p style="margin-left: 20px;">Поле <b class="text-danger">{{ message }}</b> обезательно для заполнения *</p>
+        {%- endfor %}
+        {%- endif %}
+    </div>
+    {%- for si in slug_type.si %}
+    <div class="col-xs-6">
+        <div class="table">
+            <table class="table table-condensed table-striped" style="line-height: 1.42857143;">
+                <thead>
+                <tr>
+                    <th colspan="2">
+                        {{ si.name }}
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                {%- for unit in si.u %}
+                {%- if slug_type.id == unit.type_id %}
+                {%- if u != unit.slug and slug_category.id == unit.category_id %}
+                <tr>
+                    <td>
+                        <a href="{{ url_for('unit_conv', slug=slug, unit=unit.slug, type=type) }}">{{ unit.name | capitalize }}</a>
+                        {%- if unit.name_symbol %}
+                        <span>({{ unit.name_symbol }})</span>
+                        {%- endif %}
+                        {%- if unit.description %}
+                        <b class="uc-help" data-toggle="popover" data-content="{{ unit.description |  truncate(250) }}">?</b>
+                        {%- endif %}
+                    </td>
+                    <td class="text-right">
+                        {%- if value != '' %}
+                        <span style="font-family: Menlo, Monaco, Consolas, monospace; font-size: 85%; color: #000;">
+                            {{ get_result_calc( u, unit.unit, value ) | round(45)}}
+                        </span> <!--  | thousands  -->
+                        {%- else %}
+                        <span style="font-family: Menlo, Monaco, Consolas, monospace; font-size: 85%; color: #000;">0</span>
+                        {%- endif %}
+                    </td>
+                </tr>
+                {%- endif %}
+                {%- endif %}
+                {%- endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {# {% if loop.index%2 == 0 %}<div class="clearfix hidden-xs"></div>{% endif %} #}
+    {%- endfor %}
+    {% endblock %}

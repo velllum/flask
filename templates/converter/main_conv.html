@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% set active_page = "converter" %}
+
+{% block description %}Калькулятор перевода единиц измерения физических величин поможет вам в пересчёте единиц измерения физических величин из одной системы в другую. С его помощью легко узнать, например, какого размера были и сколько весили американские и английские самолёты времён второй мировой войны, пересчитав их размеры в футах и дюймах в метры, а вес в фунтах - в килограммы.{% endblock %}
+{% block title %}{{ page_name }}{% endblock %}
+
+    {% block content %}
+    <h1 class="text-center"><img src="{{ url_for('static', filename = 'images/konverter.png') }}"> <small> {{ page_name | upper }}</small></h1>
+    {%- for crumb in g.breadcrumbs %}
+    <a href="{{ crumb.path }}">{{ crumb.title }}</a>
+    {%- if not loop.last %}&raquo;{%- endif %}
+    {%- endfor %}
+    <hr>
+    <p class="small"><b>Калькулятор перевода единиц измерения физических величин</b> поможет вам в пересчёте единиц измерения физических величин из одной системы в другую. С его помощью легко узнать, например, какого размера были и сколько весили американские и английские самолёты времён второй мировой войны, пересчитав их размеры в футах и дюймах в метры, а вес в фунтах - в килограммы.</p>
+    <!--Конвертер форма-->
+    <div class="well well-sm" style="margin-bottom: 10px;">
+        <form class="form-inline text-center" method="POST" novalidate>
+            <div class="form-group">
+                <input type="number" class="form-control input-sm text-right" step="any" placeholder="0" name="num" value="{{ value }}">
+            </div>
+            <div class="form-group">
+                <select style="width: 200px;" class="form-control input-sm" name="calculator" onchange="loadCalculator(this)">
+                    <option value="hidden" hidden> -- тип калькулятора -- </option>
+                    {%- for category in categories %}
+                    {%- if slug == category.slug %}
+                    <option value="{{ category.slug }}" selected>{{ category.name }}</option>
+                    {%- elif slug != category.slug %}
+                    <option value="{{ category.slug }}">{{ category.name }}</option>
+                    {%- endif %}
+                    {%- endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <select style="width: 200px;" class="form-control input-sm" name="type" onchange="loadCategory(this)"></select>
+            </div>
+            <div class="form-group">
+                <select style="width: 200px;" class="form-control input-sm" name="symbol"></select>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-danger btn-sm">посчитать</button>
+            </div>
+        </form>
+    </div>
+    <!--вывод сообщения орезультате-->
+    <div class="small">
+    {%- if get_flashed_messages() %}
+    {%- for message in get_flashed_messages() %}
+        <p style="margin-left: 20px;">Поле <b class="text-danger">{{ message }}</b> обезательно для заполнения *</p>
+    {%- endfor %}
+    {%- endif %}
+    </div>
+    <div class="row">
+    {%- for category in categories %}
+    <div class="col-xs-4">
+        <div class="list-group">
+            <a href="{{ url_for('category_conv', slug=category.slug) }}" class="list-group-item" title="{{ category.name }}">
+                <p class="list-group-item-heading"><strong>{{ category.name | truncate(35) }}</strong></p>
+                <hr style="margin-top: 5px; margin-bottom: 5px;">
+                <p class="list-group-item-text small">{{ category.description | truncate(100)}}</p>
+            </a>
+        </div>
+    </div>
+    {%- endfor %}
+    </div>
+    {% endblock %}

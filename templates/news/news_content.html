@@ -1,0 +1,17 @@
+{% extends "news/_base_news.html" %}
+{% set active_page = "news" %}
+
+
+{% block description %}{{ new.clear_html_content() | truncate(500, False, '', 0) }}{% endblock %}
+{% block title %}{{ new.title | safe }}{% endblock %}
+
+{% block content %}
+<h1><small>{{ new.title }}</small></h1>
+<hr>
+<div class="column text-justify">
+    <img src="{{ url_for('static', filename = new.get_image()) }}" style="width: 430px;">
+    {{ new.content | safe }}
+    <hr>
+    <span class="small"><b>{{ new.date_cont }}</b> &nbsp;|&nbsp; <span class="glyphicon glyphicon-tag" aria-hidden="true"></span> <a href="{{ url_for('news_category', category=new.category) }}">{{ new.get_category() }}</a></span>
+</div>
+{% endblock %}

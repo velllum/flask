@@ -1,0 +1,48 @@
+{% extends "search/_base_search.html" %}
+{% set active_page, active_page_2 = "search", "device" %}
+
+{% block description %}{{ device.description | safe}}{% endblock %}
+{% block title %}{{ page_name }} {{ device.name }}{% endblock %}
+
+{% block content %}
+    <h1><small>{{ page_name }} <b>{{ device.name }}</b></small></h1>
+    <ul class="breadcrumb">
+        {%- for b in breadcrumbs -%}
+        {%- if device.name != b.text -%}
+        <li class="small"><a href="{{ b.url }}">{{ b.text }}</a></li>
+        {%- endif %}
+        {%- endfor -%}
+        <li class="active small">{{ device.name }}</li>
+    </ul>
+    <hr>
+    <blockquote><p>{{ device.description }}</p></blockquote>
+    <br>
+    <p class="small">Общее количество СИ в справочнике — <b>{{ device.count }}</b></p>
+    <table class="table table-striped table-bordered table-hover small">
+        <thead>
+        <tr>
+            <th>№</th>
+            <th>Госреестр</th>
+            <th>Изготовитель</th>
+            <th>Обознач. СИ</th>
+            <th>Узнать</th>
+        </tr>
+        </thead>
+        <tbody>
+        {%- for data in device.d -%}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ data.NumberSI }}</td>
+            {%- if data.ManufacturerSI -%}
+                <td><a href="{{url_for('maker_content', maker=data.Maker)}}">{{ data.ManufacturerSI }}</a></td>
+            {%- else -%}
+                <td>Нет данных</td>
+            {%- endif -%}
+            <td>{{ data.DesignationSI }}</td>
+            <td><a href="{{url_for('content', link=data.create_link())}}" title="">Подробнее</a></td>
+        </tr>
+        {%- endfor -%}
+        </tbody>
+    </table>
+
+{% endblock %}

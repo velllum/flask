@@ -1,0 +1,31 @@
+<div class="row text-center">
+    <ul class="pagination pagination-sm">
+
+        {%- if pages.has_prev -%}
+        <li>
+            <a href="{{ url_for('maker', page=pages.prev_num) }}">&laquo;</a>
+        </li>
+        {%- endif -%}
+
+        {%- for page in pages.iter_pages() -%}
+        <li>
+            {%- if page -%}
+            {%- if page == pages.page -%}
+        <li class="active"><a>{{ page }}</a></li>
+        {%- else -%}
+        <a href="{{ url_for('maker', page=page) }}">{{ page }}</a>
+        {%- endif -%}
+        {%- else -%}
+        <a>...</a>
+        {%- endif -%}
+        </li>
+        {%- endfor -%}
+
+        {%- if pages.has_next -%}
+        <li>
+            <a href="{{ url_for('maker', page=pages.next_num) }}">&raquo;</a>
+        </li>
+        {%- endif -%}
+
+    </ul>
+</div>
